@@ -21,6 +21,10 @@ def supr_partie():
     """Permet de supprimer une sauvegarde"""
     pass
 
+def ouvrir_param():
+    """Permet de charger un fichier de paramètres"""
+    pass
+
 # paramètres
 menu_parametre= Menu(menu, tearoff = 0)
 ai_var = StringVar(value="knuth")
@@ -28,7 +32,7 @@ menu_ia = Menu(menu_parametre, tearoff=0)
 menu_ia.add_radiobutton(label="Knuth's Algorithm", variable=ai_var, value="knuth")
 menu_ia.add_radiobutton(label="Expected-Size Algorithm", variable=ai_var, value="exp_size")
 menu.add_cascade(label = "Paramètres", menu = menu_parametre)
-menu_parametre.add_command(label = "Ouvrir", command = ouvrir)
+menu_parametre.add_command(label = "Ouvrir", command = ouvrir_param)
 menu_parametre.add_cascade(label = "IA", menu = menu_ia)
 
 #fichier
