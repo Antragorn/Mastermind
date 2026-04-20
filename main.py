@@ -3,6 +3,7 @@ from tkinter import *
 #création de la fenêtre
 fenetre = Tk()
 fenetre.title("Mastermind")
+fenetre.state("zoomed")
 
 #création des menus
 menu = Menu(fenetre)
@@ -41,5 +42,12 @@ menu.add_cascade(label = "Fichier", menu = menu_fichier)
 menu_fichier.add_command(label = "Sauvegarder", command = sauve_partie)
 menu_fichier.add_command(label = "Charger", command = charge_partie)
 menu_fichier.add_command(label = "Supprimer", command = supr_partie)
+
+def init_ui():
+    #Cyprien
+    pass
+
+def check_code(code_secret, essai_code):
+    pass
 
 fenetre.mainloop()
