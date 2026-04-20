@@ -47,6 +47,28 @@ def init_ui():
     #Cyprien
     pass
 
+#Callbacks
+code_entered=False
+longueur_code=4
+prec_essai=[]
+def switch_callback(num_couleur:int):
+    prec_essai.append(num_couleur)
+    if len(prec_essai)<longueur_code:
+        return
+    if code_entered:
+        entrer_code(prec_essai)
+    else:
+        afficher_reponse(calculer_essai(prec_essai))
+    prec_essai[:]=[]
+
+def entrer_code(code:list[int]):
+    pass #TODO antonin
+def calculer_essai(essai:list[int])->list[int]:
+    pass #TODO kenny
+def afficher_reponse(reponse:list[int]):
+    pass #TODO kenny
+
+
 def check_code(code_secret, essai_code):
     pass
 
