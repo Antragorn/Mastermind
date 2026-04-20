@@ -1,4 +1,5 @@
 from tkinter import *
+from random import randint
 
 #création de la fenêtre
 fenetre = Tk()
@@ -49,27 +50,34 @@ def init_ui():
 
 #Callbacks
 code_entered=False
+code_secret = []
 longueur_code=4
 prec_essai=[]
 def switch_callback(num_couleur:int):
+    """Callback des boutons de couleur, redirige vers la création du code ou la tentative d'un essai"""
     prec_essai.append(num_couleur)
     if len(prec_essai)<longueur_code:
         return
     if code_entered:
-        entrer_code(prec_essai)
+        afficher_reponse(calculer_essai(prec_essai))        
     else:
-        afficher_reponse(calculer_essai(prec_essai))
+        entrer_code(prec_essai)
     prec_essai[:]=[]
 
 def entrer_code(code:list[int]):
-    pass #TODO antonin
+    #définit le code entré comme code_secret pour la partie
+    global code_secret
+    code_secret = code[:]
+
+def random_code():
+    #callback du bouton "Code Aléatoire"
+    global code_secret
+    code_secret = [randint(0, 7) for i in range(4)]
+
 def calculer_essai(essai:list[int])->list[int]:
     pass #TODO kenny
+
 def afficher_reponse(reponse:list[int]):
     pass #TODO kenny
-
-
-def check_code(code_secret, essai_code):
-    pass
 
 fenetre.mainloop()
