@@ -53,18 +53,22 @@ code_entered=False
 code_secret = []
 longueur_code=4
 liste_couleurs=['#000000','#ffffff','#00ff00','#ff0000','#0000ff','#00ffff','#ff00ff','#ffff00']
-set_possibilites=set(itertools.product(range(len(liste_couleurs)),repeat=longueur_code))
+set_possibilites=set(map(list,itertools.product(range(len(liste_couleurs)),repeat=longueur_code)))
 prec_essai=[]
 #Callbacks
 def switch_callback(num_couleur:int):
+    global code_entered,set_possibilites
     """Callback des boutons de couleur, redirige vers la création du code ou la tentative d'un essai"""
     prec_essai.append(num_couleur)
     if len(prec_essai)<longueur_code:
         return
     if code_entered:
-        afficher_reponse(calculer_essai(prec_essai))        
+        reponse=calculer_essai(prec_essai,code_secret)
+        set_possibilites={pos for pos in set_possibilites if calculer_essai(prec_essai,pos)==reponse}
+        afficher_reponse(reponse)        
     else:
         entrer_code(prec_essai)
+        code_entered=True
     prec_essai[:]=[]
 
 def entrer_code(code:list[int]):
@@ -77,10 +81,11 @@ def random_code():
     global code_secret
     code_secret = [randint(0, 7) for i in range(4)]
 
-def calculer_essai(essai:list[int])->list[int]:
+def calculer_essai(essai:list[int],code:list[int])->list[int]:
     pass #TODO kenny
 
 def afficher_reponse(reponse:list[int]):
     pass #TODO kenny
-
+def aide()->list[int]:
+    return next(iter(set_possibilites))
 fenetre.mainloop()
