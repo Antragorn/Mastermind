@@ -1,5 +1,6 @@
 from tkinter import *
 from random import randint
+import itertools
 
 #création de la fenêtre
 fenetre = Tk()
@@ -47,12 +48,14 @@ menu_fichier.add_command(label = "Supprimer", command = supr_partie)
 def init_ui():
     #Cyprien
     pass
-
-#Callbacks
+#variables
 code_entered=False
 code_secret = []
 longueur_code=4
+liste_couleurs=['#000000','#ffffff','#00ff00','#ff0000','#0000ff','#00ffff','#ff00ff','#ffff00']
+set_possibilites=set(itertools.product(range(len(liste_couleurs)),repeat=longueur_code))
 prec_essai=[]
+#Callbacks
 def switch_callback(num_couleur:int):
     """Callback des boutons de couleur, redirige vers la création du code ou la tentative d'un essai"""
     prec_essai.append(num_couleur)
