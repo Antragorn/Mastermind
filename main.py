@@ -56,7 +56,7 @@ def init_ui(): #création de la fenêtre
     code_aleatoire.grid(row=3, column=0, columnspan=len(liste_couleurs), sticky="n")
     quitter.grid(row = 2, column = len(liste_couleurs)-1)
     for i, couleur in enumerate(liste_couleurs):
-        boutcoul = Button(fenetre, command=entrer_code, bg = couleur,width=11,height=2)
+        boutcoul = Button(fenetre, command=lambda n = i : switch_callback(n), bg = couleur,width=11,height=2)
         boutcoul.grid(row = 1, column = i)
     canvas.grid(row = 0, column = 0, columnspan= len(liste_couleurs))
 
