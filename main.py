@@ -71,8 +71,7 @@ def entrer_code(code:list[int]):
 
 def random_code():
     #callback du bouton "Code Aléatoire"
-    global code_secret
-    code_secret = [randint(0, 7) for i in range(4)]
+    entrer_code([randint(0, 7) for i in range(4)])
 
 def calculer_essai(essai:list[int])->list[int]:
     pass #TODO kenny
