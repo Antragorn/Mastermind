@@ -117,9 +117,9 @@ def calculer_essai(essai: tuple[int], code: tuple[int]) -> tuple[int]:
         else:
             essai_restant.append(essai[i])
 
-    code_restant = [c for c in code_rest if c is not None]
+    code_restant = [c for c in code_restant if c is not None]
 
-    for couleur in essai_rest:
+    for couleur in essai_restant:
         if couleur in code_restant:
             mauvaise_places += 1
             code_restant.remove(couleur)
