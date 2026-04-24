@@ -25,6 +25,7 @@ def ouvrir_param():
 
 
 def init_ui():  # création de la fenêtre
+    global code_aleatoire
     fenetre.title("Mastermind")
     # fenetre.state("zoomed")
 
@@ -89,14 +90,15 @@ def switch_callback(num_couleur: int):
         afficher_reponse(reponse)
     else:
         entrer_code(tuple(prec_essai))
-        code_entered = True
     prec_essai[:] = []
 
 
 def entrer_code(code: tuple[int]):
     # définit le code entré comme code_secret pour la partie
-    global code_secret
+    global code_secret, code_entered
     code_secret = code[:]
+    code_entered = True
+    code_aleatoire.grid_forget()
 
 
 def random_code():
