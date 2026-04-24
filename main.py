@@ -105,11 +105,32 @@ def random_code():
 
 
 def calculer_essai(essai: tuple[int], code: tuple[int]) -> tuple[int]:
-    pass  # TODO kenny
+    bonne_places = 0
+    mauvaise_places = 0
+    code_restant = list(code)
+    essai_restant = []
+
+    for i in range(len(code)):
+        if essai[i] == code[i]:
+            bonne_places += 1
+            code_restant[i] = None
+        else:
+            essai_restant.append(essai[i])
+
+    code_restant = [c for c in code_rest if c is not None]
+
+    for couleur in essai_rest:
+        if couleur in code_restant:
+            mauvaise_places += 1
+            code_restant.remove(couleur)
+
+    return bonne_places, mauvaise_places
 
 
 def afficher_reponse(reponse: tuple[int]):
-    pass  # TODO kenny
+    bien, mal = reponse
+    label = Label(fenetre, text=f"{bien} bien placés, {mal} mal placés")
+    label.grid(row=4)
 
 
 def aide() -> tuple[int]:
