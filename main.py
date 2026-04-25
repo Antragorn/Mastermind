@@ -24,7 +24,8 @@ def ouvrir_param():
     pass
 
 
-def init_ui():  # création de la fenêtre
+def init_ui():
+    """création de la fenêtre"""
     global code_aleatoire
     fenetre.title("Mastermind")
     # fenetre.state("zoomed")
@@ -74,12 +75,13 @@ liste_couleurs = ['#000000', '#ffffff', '#00ff00', '#ff0000', '#0000ff', '#00fff
 # noinspection PyTypeChecker
 set_possibilites: set[tuple[int]] = set(itertools.product(range(len(liste_couleurs)), repeat=longueur_code))
 prec_essai: list[int] = []
+code_aleatoire: Button
 
 
 # Callbacks
 def switch_callback(num_couleur: int):
-    global code_entered, set_possibilites
     """Callback des boutons de couleur, redirige vers la création du code ou la tentative d'un essai"""
+    global code_entered, set_possibilites
     prec_essai.append(num_couleur)
     if len(prec_essai) < longueur_code:
         return
@@ -94,7 +96,7 @@ def switch_callback(num_couleur: int):
 
 
 def entrer_code(code: tuple[int]):
-    # définit le code entré comme code_secret pour la partie
+    """définit le code entré comme code_secret pour la partie"""
     global code_secret, code_entered
     code_secret = code[:]
     code_entered = True
@@ -102,11 +104,12 @@ def entrer_code(code: tuple[int]):
 
 
 def random_code():
-    #callback du bouton "Code Aléatoire"
-    entrer_code([randint(0, 7) for i in range(4)])
+    """callback du bouton "Code Aléatoire"
+    """
+    entrer_code(tuple(randint(0, 7) for _ in range(4)))
 
 
-def calculer_essai(essai: tuple[int], code: tuple[int]) -> tuple[int]:
+def calculer_essai(essai: tuple[int], code: tuple[int]) -> tuple[int, int]:
     bonne_places = 0
     mauvaise_places = 0
     code_restant = list(code)
@@ -129,7 +132,7 @@ def calculer_essai(essai: tuple[int], code: tuple[int]) -> tuple[int]:
     return bonne_places, mauvaise_places
 
 
-def afficher_reponse(reponse: tuple[int]):
+def afficher_reponse(reponse: tuple[int, int]):
     bien, mal = reponse
     label = Label(fenetre, text=f"{bien} bien placés, {mal} mal placés")
     label.grid(row=4)
