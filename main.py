@@ -68,24 +68,27 @@ def init_ui():
 
 
 # variables
-code_entered = False
+code_entered: bool = False
 code_secret: tuple[int] = (0,)
-longueur_code = 4
-liste_couleurs = ['#000000', '#ffffff', '#00ff00', '#ff0000', '#0000ff', '#00ffff', '#ff00ff', '#ffff00']
+longueur_code: int = 4
+liste_couleurs: list[str] = ['#000000', '#ffffff', '#00ff00', '#ff0000', '#0000ff', '#00ffff', '#ff00ff', '#ffff00']
 # noinspection PyTypeChecker
 set_possibilites: set[tuple[int]] = set(itertools.product(range(len(liste_couleurs)), repeat=longueur_code))
 prec_essai: list[int] = []
 code_aleatoire: Button
+essais_max: int = 10
+num_essai: int = 0
 
 
 # Callbacks
 def switch_callback(num_couleur: int):
     """Callback des boutons de couleur, redirige vers la création du code ou la tentative d'un essai"""
-    global code_entered, set_possibilites
+    global set_possibilites, num_essai
     prec_essai.append(num_couleur)
     if len(prec_essai) < longueur_code:
         return
     if code_entered:
+        num_essai += 1
         essai_tuple = tuple(prec_essai)
         reponse = calculer_essai(essai_tuple, code_secret)
         set_possibilites = {pos for pos in set_possibilites if calculer_essai(essai_tuple, pos) == reponse}
