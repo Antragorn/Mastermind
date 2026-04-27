@@ -147,7 +147,19 @@ def aide() -> tuple[int]:
 
 
 def rejouer():
-    pass
+    global code_entered, code_secret, set_possibilites, prec_essai, num_essai
+    code_entered = False
+    code_secret = (0,)
+    prec_essai.clear()
+    num_essai = 0
+
+    set_possibilites = set(itertools.product(range(len(liste_couleurs)), repeat=longueur_code))
+
+    for widget in fenetre.grid_slaves():
+        if int(widget.grid_info()["row"]) >= 4:
+            widget.destroy()
+
+    code_aleatoire.grid(row=3, column=0, columnspan=len(liste_couleurs), sticky="n")
 
 
 def annuler():
