@@ -109,8 +109,6 @@ def switch_callback(num_couleur: int):
 
         reponse = calculer_essai(essai_tuple, code_secret)
 
-        set_possibilites = {pos for pos in set_possibilites if calculer_essai(essai_tuple, pos) == reponse}
-
         afficher_reponse(ancien_frame, reponse)
     else:
         entrer_code(tuple(prec_essai))
