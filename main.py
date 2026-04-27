@@ -2,8 +2,10 @@ from tkinter import *
 from random import randint
 import itertools
 
-
 # fonctions pour les menus
+from tkinter import Frame
+
+
 def charge_partie():
     """Permet de charger le fichier sauvegarde"""
     pass
@@ -26,7 +28,7 @@ def ouvrir_param():
 
 def init_ui():
     """création de la fenêtre"""
-    global code_aleatoire
+    global code_aleatoire, frame_jeu, frame_essai_actuel
     fenetre.title("Mastermind")
     fenetre.state("zoomed")
 
@@ -56,17 +58,20 @@ def init_ui():
     code_aleatoire = Button(fenetre, command=random_code, text="code aleatoire")
     annule = Button(fenetre, command=annuler, text="annuler")
     quitter = Button(fenetre, command=fenetre.destroy, text="quitter")
-    frame = Frame(fenetre)
+    frame_jeu = Frame(fenetre)
     rejoue.grid(row=2, column=0)
     annule.grid(row=2, column=0, columnspan=len(liste_couleurs), sticky="n")
     code_aleatoire.grid(row=3, column=0, columnspan=len(liste_couleurs), sticky="n")
     quitter.grid(row=2, column=len(liste_couleurs) - 1)
     for i, couleur in enumerate(liste_couleurs):
         boutcoul = Button(fenetre, command=lambda n=i: switch_callback(n), bg=couleur, width=11, height=2)
-        boutcoul.grid(row=1, column=i,sticky=EW)
-        fenetre.grid_columnconfigure(i,weight=1)
-    frame.grid(row=0, column=0, columnspan=len(liste_couleurs),sticky=NSEW)
+        boutcoul.grid(row=1, column=i, sticky=EW)
+        fenetre.grid_columnconfigure(i, weight=1)
+    frame_jeu.grid(row=0, column=0, columnspan=len(liste_couleurs), sticky=NSEW)
     fenetre.grid_rowconfigure(0, weight=1)
+    frame_essai_actuel=Frame(frame_jeu)
+    frame_essai_actuel.pack(side=TOP)
+
 
 # variables
 code_entered: bool = False
@@ -77,15 +82,19 @@ liste_couleurs: list[str] = ['#000000', '#ffffff', '#00ff00', '#ff0000', '#0000f
 set_possibilites: set[tuple[int]] = set(itertools.product(range(len(liste_couleurs)), repeat=longueur_code))
 prec_essai: list[int] = []
 code_aleatoire: Button
+frame_jeu: Frame
+frame_essai_actuel: Frame
 essais_max: int = 10
 num_essai: int = 0
-
 
 # Callbacks
 def switch_callback(num_couleur: int):
     """Callback des boutons de couleur, redirige vers la création du code ou la tentative d'un essai"""
-    global set_possibilites, num_essai
+    global set_possibilites, num_essai, frame_essai_actuel
     prec_essai.append(num_couleur)
+    canvas = Canvas(frame_essai_actuel,height=75,width=75)
+    canvas.pack(side=LEFT)
+    canvas.create_oval(5, 5, 70, 70, fill=liste_couleurs[num_couleur])
     if len(prec_essai) < longueur_code:
         return
     if code_entered:
@@ -96,6 +105,9 @@ def switch_callback(num_couleur: int):
         afficher_reponse(reponse)
     else:
         entrer_code(tuple(prec_essai))
+    frame_essai_actuel.destroy()
+    frame_essai_actuel = Frame(frame_jeu)
+    frame_essai_actuel.pack(side=TOP)
     prec_essai[:] = []
 
 
