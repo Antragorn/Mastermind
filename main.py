@@ -28,7 +28,7 @@ def init_ui():
     """création de la fenêtre"""
     global code_aleatoire
     fenetre.title("Mastermind")
-    # fenetre.state("zoomed")
+    fenetre.state("zoomed")
 
     # création des menus
     menu = Menu(fenetre)
@@ -56,16 +56,17 @@ def init_ui():
     code_aleatoire = Button(fenetre, command=random_code, text="code aleatoire")
     annule = Button(fenetre, command=annuler, text="annuler")
     quitter = Button(fenetre, command=fenetre.destroy, text="quitter")
-    canvas = Canvas(fenetre)
+    frame = Frame(fenetre)
     rejoue.grid(row=2, column=0)
     annule.grid(row=2, column=0, columnspan=len(liste_couleurs), sticky="n")
     code_aleatoire.grid(row=3, column=0, columnspan=len(liste_couleurs), sticky="n")
     quitter.grid(row=2, column=len(liste_couleurs) - 1)
     for i, couleur in enumerate(liste_couleurs):
         boutcoul = Button(fenetre, command=lambda n=i: switch_callback(n), bg=couleur, width=11, height=2)
-        boutcoul.grid(row=1, column=i)
-    canvas.grid(row=0, column=0, columnspan=len(liste_couleurs))
-
+        boutcoul.grid(row=1, column=i,sticky=EW)
+        fenetre.grid_columnconfigure(i,weight=1)
+    frame.grid(row=0, column=0, columnspan=len(liste_couleurs),sticky=NSEW)
+    fenetre.grid_rowconfigure(0, weight=1)
 
 # variables
 code_entered: bool = False
