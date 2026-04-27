@@ -71,7 +71,7 @@ def init_ui():
     frame_jeu.grid(row=0, column=0, columnspan=len(liste_couleurs), sticky=NSEW)
     frame_historique.pack(side=TOP, fill=BOTH, expand=True)
     fenetre.grid_rowconfigure(0, weight=1)
-    frame_essai_actuel=Frame(frame_jeu)
+    frame_essai_actuel = Frame(frame_jeu)
     frame_essai_actuel.pack(side=TOP)
 
 
@@ -90,12 +90,13 @@ frame_essai_actuel: Frame
 essais_max: int = 10
 num_essai: int = 0
 
+
 # Callbacks
 def switch_callback(num_couleur: int):
     """Callback des boutons de couleur, redirige vers la création du code ou la tentative d'un essai"""
     global set_possibilites, num_essai, frame_essai_actuel
     prec_essai.append(num_couleur)
-    canvas = Canvas(frame_essai_actuel,height=75,width=75)
+    canvas = Canvas(frame_essai_actuel, height=75, width=75)
     canvas.pack(side=LEFT)
     canvas.create_oval(5, 5, 70, 70, fill=liste_couleurs[num_couleur])
     if len(prec_essai) < longueur_code:
@@ -108,6 +109,7 @@ def switch_callback(num_couleur: int):
         essai_tuple = tuple(prec_essai)
 
         reponse = calculer_essai(essai_tuple, code_secret)
+        set_possibilites = {pos for pos in set_possibilites if calculer_essai(essai_tuple, pos) == reponse}
 
         afficher_reponse(ancien_frame, reponse)
     else:
