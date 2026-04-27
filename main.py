@@ -88,11 +88,14 @@ frame_jeu: Frame
 frame_essai_actuel: Frame
 essais_max: int = 10
 num_essai: int = 0
+game_over: bool = False
 
 # Callbacks
 def switch_callback(num_couleur: int):
     """Callback des boutons de couleur, redirige vers la création du code ou la tentative d'un essai"""
     global set_possibilites, num_essai, frame_essai_actuel
+    if game_over:
+        return
     prec_essai.append(num_couleur)
     row_affichage = essais_max - num_essai -1
     canvas = Canvas(frame_jeu, height=75, width=75)
@@ -104,6 +107,9 @@ def switch_callback(num_couleur: int):
         num_essai += 1
         essai_tuple = tuple(prec_essai)
         reponse = calculer_essai(essai_tuple, code_secret)
+        if reponse[0] == longueur_code:
+            fin_partie_victoire()
+            return
         set_possibilites = {pos for pos in set_possibilites if calculer_essai(essai_tuple, pos) == reponse}
         afficher_reponse(reponse)
     else:
@@ -159,7 +165,7 @@ def aide() -> tuple[int]:
 
 
 def rejouer():
-    global code_entered, code_secret, set_possibilites, prec_essai, num_essai, frame_jeu
+    global code_entered, code_secret, set_possibilites, prec_essai, num_essai, frame_jeu, game_over
     code_entered = False
     code_secret = (0,)
     prec_essai.clear()
@@ -174,6 +180,13 @@ def rejouer():
     code_aleatoire.grid(row=3, column=0, columnspan=len(liste_couleurs), sticky="n")
     for widget in frame_jeu.winfo_children():
         widget.destroy()
+    game_over = False
+
+def fin_partie_victoire():
+    global game_over
+    game_over = True
+
+    Label(fenetre, text="🎉 Partie gagnée !", font=("Arial", 20), fg="green").grid(row=5)
 
 
 def annuler():
