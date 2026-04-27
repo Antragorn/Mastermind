@@ -28,7 +28,7 @@ def ouvrir_param():
 
 def init_ui():
     """création de la fenêtre"""
-    global code_aleatoire, frame_jeu, frame_essai_actuel
+    global code_aleatoire, frame_jeu, frame_essai_actuel, frame_historique
     fenetre.title("Mastermind")
     fenetre.state("zoomed")
 
@@ -59,6 +59,7 @@ def init_ui():
     annule = Button(fenetre, command=annuler, text="annuler")
     quitter = Button(fenetre, command=fenetre.destroy, text="quitter")
     frame_jeu = Frame(fenetre)
+    frame_historique = Frame(frame_jeu)
     rejoue.grid(row=2, column=0)
     annule.grid(row=2, column=0, columnspan=len(liste_couleurs), sticky="n")
     code_aleatoire.grid(row=3, column=0, columnspan=len(liste_couleurs), sticky="n")
@@ -67,12 +68,11 @@ def init_ui():
         boutcoul = Button(fenetre, command=lambda n=i: switch_callback(n), bg=couleur, width=11, height=2)
         boutcoul.grid(row=1, column=i, sticky=EW)
         fenetre.grid_columnconfigure(i, weight=1)
-    frame_jeu.grid(row=0, column=0, columnspan=len(liste_couleurs))
-    for i in range(longueur_code):
-        frame_jeu.grid_columnconfigure(0, weight=1)
-    for i in range(essais_max):
-        frame_jeu.grid_rowconfigure(0, weight=1)
+    frame_jeu.grid(row=0, column=0, columnspan=len(liste_couleurs), sticky=NSEW)
+    frame_historique.pack(side=TOP, fill=BOTH, expand=True)
     fenetre.grid_rowconfigure(0, weight=1)
+    frame_essai_actuel=Frame(frame_jeu)
+    frame_essai_actuel.pack(side=TOP)
 
 
 # variables
@@ -85,35 +85,39 @@ set_possibilites: set[tuple[int]] = set(itertools.product(range(len(liste_couleu
 prec_essai: list[int] = []
 code_aleatoire: Button
 frame_jeu: Frame
+frame_historique: Frame
 frame_essai_actuel: Frame
 essais_max: int = 10
 num_essai: int = 0
-game_over: bool = False
 
 # Callbacks
 def switch_callback(num_couleur: int):
     """Callback des boutons de couleur, redirige vers la création du code ou la tentative d'un essai"""
     global set_possibilites, num_essai, frame_essai_actuel
-    if game_over:
-        return
     prec_essai.append(num_couleur)
-    row_affichage = essais_max - num_essai -1
-    canvas = Canvas(frame_jeu, height=75, width=75)
-    canvas.grid(row=row_affichage, column=len(prec_essai) -1 ,sticky="nsew")
+    canvas = Canvas(frame_essai_actuel,height=75,width=75)
+    canvas.pack(side=LEFT)
     canvas.create_oval(5, 5, 70, 70, fill=liste_couleurs[num_couleur])
     if len(prec_essai) < longueur_code:
         return
+
+    ancien_frame = frame_essai_actuel
+
     if code_entered:
         num_essai += 1
         essai_tuple = tuple(prec_essai)
+
         reponse = calculer_essai(essai_tuple, code_secret)
-        if reponse[0] == longueur_code:
-            fin_partie_victoire()
-            return
+
         set_possibilites = {pos for pos in set_possibilites if calculer_essai(essai_tuple, pos) == reponse}
-        afficher_reponse(reponse)
+
+        afficher_reponse(ancien_frame, reponse)
     else:
         entrer_code(tuple(prec_essai))
+
+    frame_essai_actuel = Frame(frame_historique)
+    frame_essai_actuel.pack(side=TOP)
+
     prec_essai[:] = []
 
 
@@ -154,10 +158,10 @@ def calculer_essai(essai: tuple[int], code: tuple[int]) -> tuple[int, int]:
     return bonne_places, mauvaise_places
 
 
-def afficher_reponse(reponse: tuple[int, int]):
+def afficher_reponse(frame, reponse: tuple[int, int]):
     bien, mal = reponse
-    label = Label(fenetre, text=f"{bien} bien placés, {mal} mal placés")
-    label.grid(row=4)
+    label = Label(frame, text=f"{bien} bien placés, {mal} mal placés")
+    label.pack(side=RIGHT)
 
 
 def aide() -> tuple[int]:
@@ -165,7 +169,7 @@ def aide() -> tuple[int]:
 
 
 def rejouer():
-    global code_entered, code_secret, set_possibilites, prec_essai, num_essai, frame_jeu, game_over
+    global code_entered, code_secret, set_possibilites, prec_essai, num_essai
     code_entered = False
     code_secret = (0,)
     prec_essai.clear()
@@ -178,15 +182,6 @@ def rejouer():
             widget.destroy()
 
     code_aleatoire.grid(row=3, column=0, columnspan=len(liste_couleurs), sticky="n")
-    for widget in frame_jeu.winfo_children():
-        widget.destroy()
-    game_over = False
-
-def fin_partie_victoire():
-    global game_over
-    game_over = True
-
-    Label(fenetre, text="🎉 Partie gagnée !", font=("Arial", 20), fg="green").grid(row=5)
 
 
 def annuler():
