@@ -67,10 +67,12 @@ def init_ui():
         boutcoul = Button(fenetre, command=lambda n=i: switch_callback(n), bg=couleur, width=11, height=2)
         boutcoul.grid(row=1, column=i, sticky=EW)
         fenetre.grid_columnconfigure(i, weight=1)
-    frame_jeu.grid(row=0, column=0, columnspan=len(liste_couleurs), sticky=NSEW)
+    frame_jeu.grid(row=0, column=0, columnspan=len(liste_couleurs))
+    for i in range(longueur_code):
+        frame_jeu.grid_columnconfigure(0, weight=1)
+    for i in range(essais_max):
+        frame_jeu.grid_rowconfigure(0, weight=1)
     fenetre.grid_rowconfigure(0, weight=1)
-    frame_essai_actuel=Frame(frame_jeu)
-    frame_essai_actuel.pack(side=TOP)
 
 
 # variables
@@ -92,8 +94,9 @@ def switch_callback(num_couleur: int):
     """Callback des boutons de couleur, redirige vers la création du code ou la tentative d'un essai"""
     global set_possibilites, num_essai, frame_essai_actuel
     prec_essai.append(num_couleur)
-    canvas = Canvas(frame_essai_actuel,height=75,width=75)
-    canvas.pack(side=LEFT)
+    row_affichage = essais_max - num_essai -1
+    canvas = Canvas(frame_jeu, height=75, width=75)
+    canvas.grid(row=row_affichage, column=len(prec_essai) -1 ,sticky="nsew")
     canvas.create_oval(5, 5, 70, 70, fill=liste_couleurs[num_couleur])
     if len(prec_essai) < longueur_code:
         return
@@ -105,9 +108,6 @@ def switch_callback(num_couleur: int):
         afficher_reponse(reponse)
     else:
         entrer_code(tuple(prec_essai))
-    frame_essai_actuel.destroy()
-    frame_essai_actuel = Frame(frame_jeu)
-    frame_essai_actuel.pack(side=TOP)
     prec_essai[:] = []
 
 
@@ -159,7 +159,7 @@ def aide() -> tuple[int]:
 
 
 def rejouer():
-    global code_entered, code_secret, set_possibilites, prec_essai, num_essai
+    global code_entered, code_secret, set_possibilites, prec_essai, num_essai, frame_jeu
     code_entered = False
     code_secret = (0,)
     prec_essai.clear()
@@ -172,6 +172,8 @@ def rejouer():
             widget.destroy()
 
     code_aleatoire.grid(row=3, column=0, columnspan=len(liste_couleurs), sticky="n")
+    for widget in frame_jeu.winfo_children():
+        widget.destroy()
 
 
 def annuler():
