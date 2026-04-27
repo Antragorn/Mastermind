@@ -77,6 +77,7 @@ def init_ui():
 
 # variables
 code_entered: bool = False
+partie_terminee: bool = False
 code_secret: tuple[int] = (0,)
 longueur_code: int = 4
 liste_couleurs: list[str] = ['#000000', '#ffffff', '#00ff00', '#ff0000', '#0000ff', '#00ffff', '#ff00ff', '#ffff00']
@@ -93,7 +94,9 @@ num_essai: int = 0
 # Callbacks
 def switch_callback(num_couleur: int):
     """Callback des boutons de couleur, redirige vers la création du code ou la tentative d'un essai"""
-    global set_possibilites, num_essai, frame_essai_actuel
+    global set_possibilites, num_essai, frame_essai_actuel, partie_terminee
+    if partie_terminee:
+        return
     prec_essai.append(num_couleur)
     canvas = Canvas(frame_essai_actuel,height=75,width=75)
     canvas.pack(side=LEFT)
@@ -111,6 +114,13 @@ def switch_callback(num_couleur: int):
         set_possibilites = {pos for pos in set_possibilites if calculer_essai(essai_tuple, pos) == reponse}
 
         afficher_reponse(ancien_frame, reponse)
+        if essai_tuple == code_secret:
+            partie_terminee = True
+            popup = Toplevel(fenetre)
+            popup.title("Victoire !")
+            popup.geometry("300x150")
+            Label(popup, text="🎉 Bravo ! Vous avez trouvé le code !", font=("Arial", 12)).pack(pady=20)
+            return
     else:
         entrer_code(tuple(prec_essai))
         frame_essai_actuel.destroy()
@@ -169,7 +179,8 @@ def aide() -> tuple[int]:
 
 
 def rejouer():
-    global code_entered, code_secret, set_possibilites, prec_essai, num_essai
+    global code_entered, code_secret, set_possibilites, prec_essai, num_essai, partie_terminee, frame_essai_actuel
+    partie_terminee = False
     code_entered = False
     code_secret = (0,)
     prec_essai.clear()
@@ -177,9 +188,13 @@ def rejouer():
 
     set_possibilites = set(itertools.product(range(len(liste_couleurs)), repeat=longueur_code))
 
-    for widget in fenetre.grid_slaves():
-        if int(widget.grid_info()["row"]) >= 4:
-            widget.destroy()
+    for widget in frame_historique.winfo_children():
+        widget.destroy()
+
+    if frame_essai_actuel:
+        frame_essai_actuel.destroy()
+    frame_essai_actuel = Frame(frame_jeu)
+    frame_essai_actuel.pack(side=TOP)
 
     code_aleatoire.grid(row=3, column=0, columnspan=len(liste_couleurs), sticky="n")
 
