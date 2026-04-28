@@ -140,9 +140,13 @@ def entrer_code(code: tuple[int]):
 
 
 def random_code():
+    global frame_essai_actuel
     """callback du bouton "Code Aléatoire"
     """
     entrer_code(tuple(randint(0, 7) for _ in range(4)))
+
+    frame_essai_actuel = Frame(frame_historique)
+    frame_essai_actuel.pack(side=TOP)
 
 
 def calculer_essai(essai: tuple[int], code: tuple[int]) -> tuple[int, int]:
@@ -200,8 +204,11 @@ def rejouer():
 
 
 def annuler():
-    pass
+    global prec_essai, frame_essai_actuel
 
+    if prec_essai:
+        prec_essai.pop()
+        frame_essai_actuel.winfo_children()[-1].destroy()
 
 if __name__ == '__main__':
     fenetre = Tk()
