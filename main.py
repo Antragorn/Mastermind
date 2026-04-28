@@ -133,7 +133,8 @@ def switch_callback(num_couleur: int):
 
 def entrer_code(code: tuple[int]):
     """définit le code entré comme code_secret pour la partie"""
-    global code_secret, code_entered
+    global code_secret, code_entered, prec_essai
+    prec_essai.clear()
     code_secret = code[:]
     code_entered = True
     code_aleatoire.grid_forget()
@@ -144,7 +145,8 @@ def random_code():
     """callback du bouton "Code Aléatoire"
     """
     entrer_code(tuple(randint(0, 7) for _ in range(4)))
-
+    if frame_essai_actuel:
+        frame_essai_actuel.destroy()
     frame_essai_actuel = Frame(frame_historique)
     frame_essai_actuel.pack(side=TOP)
 
