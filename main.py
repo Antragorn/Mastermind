@@ -41,7 +41,51 @@ def sauve_partie():
 
 def charge_partie():
     """Permet de charger le fichier sauvegarde"""
-    pass
+    try:
+        with open("save.txt", "r") as f:
+            data = load(f)
+            if len(data) == 0:
+                raise FileNotFoundError
+    except FileNotFoundError:
+        messagebox.showerror("Erreur", "Aucune partie sauvegardée trouvée !")
+        return
+
+    # Créer la fenêtre pour choisir la partie
+    choix_fenetre = Toplevel(fenetre)
+    choix_fenetre.title("Charger une partie")
+
+    nom_var = StringVar()
+    noms_parties = list(data.keys())
+    nom_var.set(noms_parties[0])  # valeur par défaut
+
+    menu = OptionMenu(choix_fenetre, nom_var, *noms_parties)
+    menu.pack(ipadx=100, ipady=100, fill=BOTH)
+
+    def charger_selection():
+        global code_secret, historique_essais, num_essai, code_entered, chargement
+        partie = nom_var.get()
+        rejouer()  # réinitialiser le plateau
+
+        sauvegarde = data[partie]
+
+        code_secret = tuple(sauvegarde["code_secret"])
+        historique_essais = [tuple(e) for e in sauvegarde["historique"]]
+        num_essai = sauvegarde["num_essai"]
+        code_entered = True
+
+        code_aleatoire.grid_forget()
+
+        chargement = True
+        for essai in historique_essais:
+            for couleur in essai:
+                switch_callback(couleur)
+        chargement = False
+
+        choix_fenetre.destroy()
+        messagebox.showinfo("Chargement", f"Partie '{partie}' rechargée avec succès !")
+
+    bouton_charger = Button(choix_fenetre, text="Charger", command=charger_selection)
+    bouton_charger.pack(padx=10, pady=10)
 
 
 def supr_partie():
@@ -154,6 +198,7 @@ frame_essai_actuel: Frame
 essais_max: int = 10
 num_essai: int = 0
 historique_essais: list = []
+chargement: bool = False
 
 # Callbacks
 def switch_callback(num_couleur: int):
@@ -173,7 +218,8 @@ def switch_callback(num_couleur: int):
     if code_entered:
         num_essai += 1
         essai_tuple = tuple(prec_essai)
-        historique_essais.append(essai_tuple)
+        if not chargement:
+            historique_essais.append(essai_tuple)
 
         reponse = calculer_essai(essai_tuple, code_secret)
         set_possibilites = {pos for pos in set_possibilites if calculer_essai(essai_tuple, pos) == reponse}
