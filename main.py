@@ -1,18 +1,46 @@
 from tkinter import *
 from random import randint
 import itertools
+from tkinter import messagebox
+from json import load, dump
 
 # fonctions pour les menus
 from tkinter import Frame
 
 
-def charge_partie():
-    """Permet de charger le fichier sauvegarde"""
-    pass
-
-
 def sauve_partie():
     """Permet de sauvegarder la partie en cours dans un fichier"""
+    sauv_fenetre = Toplevel(fenetre)
+    sauv_fenetre.title("Sauvegarder une partie")
+    Label(sauv_fenetre, text="Nom de la partie :").pack(padx=50, pady=50)
+    entry = Entry(sauv_fenetre, justify=CENTER)
+    entry.pack(ipadx=10, ipady=5, fill=BOTH)
+
+    def sauvegarder():
+        nom_partie = entry.get().strip()
+
+        # Lire le fichier existant
+        try:
+            with open("save.txt", "r") as f:
+                data = load(f)
+        except FileNotFoundError:
+            data = {}
+        data[nom_partie] = {
+            "code_secret": list(code_secret),
+            "historique": [list(e) for e in historique_essais],
+            "num_essai": num_essai
+        }  # Ajouter la nouvelle partie
+        # Écrire dans le fichier
+        with open("save.txt", "w") as f:
+            dump(data, f)
+        sauv_fenetre.destroy()
+        messagebox.showinfo("Sauvegarde", "Partie sauvegardée avec succès !")
+
+    Button(sauv_fenetre, text="Sauvegarder", command=sauvegarder).pack(padx=70, pady=50)
+
+
+def charge_partie():
+    """Permet de charger le fichier sauvegarde"""
     pass
 
 
@@ -90,6 +118,7 @@ frame_historique: Frame
 frame_essai_actuel: Frame
 essais_max: int = 10
 num_essai: int = 0
+historique_essais: list = []
 
 # Callbacks
 def switch_callback(num_couleur: int):
@@ -109,6 +138,7 @@ def switch_callback(num_couleur: int):
     if code_entered:
         num_essai += 1
         essai_tuple = tuple(prec_essai)
+        historique_essais.append(essai_tuple)
 
         reponse = calculer_essai(essai_tuple, code_secret)
         set_possibilites = {pos for pos in set_possibilites if calculer_essai(essai_tuple, pos) == reponse}
