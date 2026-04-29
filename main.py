@@ -46,8 +46,43 @@ def charge_partie():
 
 def supr_partie():
     """Permet de supprimer une sauvegarde"""
-    pass
+    try:
+        with open("save.txt", "r") as f:
+            data = load(f)
+            if len(data) == 0:
+                raise FileNotFoundError
+    except FileNotFoundError:
+        messagebox.showerror("Erreur", "Aucune partie sauvegardée trouvée !")
+        return
 
+    # Créer la fenêtre pour choisir la partie
+    choix_fenetre = Toplevel(fenetre)
+    choix_fenetre.title("Supprimer une partie")
+
+    nom_var = StringVar()
+    noms_parties = list(data.keys())
+    nom_var.set(noms_parties[0])  # valeur par défaut
+
+    menu = OptionMenu(choix_fenetre, nom_var, *noms_parties)
+    menu.pack(ipadx=100, ipady=100, fill=BOTH)
+
+    def supprimer():
+        nom_partie = nom_var.get()
+
+        # Lire le fichier existant
+        try:
+            with open("save.txt", "r") as f:
+                data = load(f)
+        except FileNotFoundError:
+            data = {}
+        del data[nom_partie]
+        # Écrire dans le fichier
+        with open("save.txt", "w") as f:
+            dump(data, f)
+        choix_fenetre.destroy()
+        messagebox.showinfo("Suppression", f"Partie {nom_partie} supprimée avec succès !")
+
+    Button(choix_fenetre, text="Supprimer", command=supprimer).pack(padx=70, pady=50)
 
 def ouvrir_param():
     """Permet de charger un fichier de paramètres"""
