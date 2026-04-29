@@ -178,7 +178,7 @@ def init_ui():
     frame_jeu.grid(row=0, column=0, columnspan=len(liste_couleurs), sticky=NSEW)
     frame_historique.pack(side=TOP, fill=BOTH, expand=True)
     fenetre.grid_rowconfigure(0, weight=1)
-    frame_essai_actuel=Frame(frame_jeu)
+    frame_essai_actuel=Frame(frame_historique)
     frame_essai_actuel.pack(side=TOP)
 
 
@@ -308,7 +308,7 @@ def rejouer():
 
     if frame_essai_actuel:
         frame_essai_actuel.destroy()
-    frame_essai_actuel = Frame(frame_jeu)
+    frame_essai_actuel = Frame(frame_historique)
     frame_essai_actuel.pack(side=TOP)
 
     code_aleatoire.grid(row=3, column=0, columnspan=len(liste_couleurs), sticky="n")
