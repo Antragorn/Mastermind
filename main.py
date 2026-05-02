@@ -134,7 +134,17 @@ def ouvrir_param():
 
 
 def init_ui():
-    """création de la fenêtre"""
+    """
+    Initialise l'interface graphique principale du jeu Mastermind.
+
+    Crée :
+    - La fenêtre principale (plein écran)
+    - Les menus (Fichier, Paramètres, IA)
+    - Les boutons d'action (rejouer, annuler, quitter, code aléatoire)
+    - Les boutons de sélection des couleurs
+    - Les frames pour afficher les essais et l'historique
+
+    """
     global code_aleatoire, frame_jeu, frame_essai_actuel, frame_historique
     fenetre.title("Mastermind")
     fenetre.state("zoomed")
@@ -251,6 +261,9 @@ def entrer_code(code: tuple[int]):
 
 
 def random_code():
+    """
+    Génère un code secret aléatoire.
+    """
     global frame_essai_actuel
     """callback du bouton "Code Aléatoire"
     """
@@ -261,6 +274,9 @@ def random_code():
 
 
 def calculer_essai(essai: tuple[int], code: tuple[int]) -> tuple[int, int]:
+    """
+    Compare un essai avec le code secret.
+    """
     bonne_places = 0
     mauvaise_places = 0
     code_restant = list(code)
@@ -284,6 +300,9 @@ def calculer_essai(essai: tuple[int], code: tuple[int]) -> tuple[int, int]:
 
 
 def afficher_reponse(frame, reponse: tuple[int, int]):
+    """
+    Affiche visuellement la réponse à un essai mais sans donner la reponse exact
+    """
     bien, mal = reponse
 
     frame_rep = Frame(frame)
@@ -298,10 +317,16 @@ def afficher_reponse(frame, reponse: tuple[int, int]):
 
 
 def aide() -> tuple[int]:
+    """
+    Fournit une aide en proposant une combinaison possible.
+    """
     return next(iter(set_possibilites))
 
 
 def rejouer():
+    """
+    Permet de recommencer une nouvelle partie.
+    """
     global code_entered, code_secret, set_possibilites, prec_essai, num_essai, partie_terminee, frame_essai_actuel
     partie_terminee = False
     code_entered = False
@@ -323,6 +348,9 @@ def rejouer():
 
 
 def annuler():
+    """
+    Annule la dernière couleur selectionne mais ne fait rien si aucune couleur n'est choisi.
+    """
     global prec_essai, frame_essai_actuel
 
     if prec_essai:
