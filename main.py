@@ -285,8 +285,16 @@ def calculer_essai(essai: tuple[int], code: tuple[int]) -> tuple[int, int]:
 
 def afficher_reponse(frame, reponse: tuple[int, int]):
     bien, mal = reponse
-    label = Label(frame, text=f"{bien} bien placés, {mal} mal placés")
-    label.pack(side=RIGHT)
+
+    frame_rep = Frame(frame)
+    frame_rep.pack(side=RIGHT, padx=10)
+
+    pions = ["black"] * bien + ["white"] * mal
+
+    for i, couleur in enumerate(pions):
+        canvas = Canvas(frame_rep, width=20, height=20)
+        canvas.grid(row=i // 2, column=i % 2)
+        canvas.create_rectangle(2, 2, 18, 18, fill=couleur)
 
 
 def aide() -> tuple[int]:
