@@ -1,23 +1,29 @@
+import numpy as np
+from itertools import product
+from main import calculer_essai
 
-def knuth(essais:dict[str:tuple]) -> list[int]:
-    """essais: dictionnaire qui associe à chaque essai précédent sa réponse
+def knuth(essais:tuple) -> list[int]:
+    """essais: tuple des essais et réponses précédentes
     --> prochain_essai: list[int], réponse de l'algorithme
     """
 
-    if not len(essais):
+    if not essais:
         return [1, 1, 2, 2] #initial try for the five-guess algorithm
     
-    all_codes = {f"{a}{b}{c}{d}" for a in range(8) for b in range(8) for c in range(8) for d in range(8)}
-    s = all_codes.copy()
+    codes = list(product(range(8), repeat=4))
 
-    for guess in essais:
-        #todo remove de s tous les codes qui ne peuvent pas avoir donné la réponse qui a été donnée à l'essai
-        pass
+    possible = [
+        code for code in codes
+        if all(calculer_essai(guess, code) == response for guess, response in essais)
+    ]
+
+    if len(possible) == 1:
+        return possible[0]
 
     prochain_essai = []
 
     return prochain_essai
 
-knuth({"0012":(1, 1)})
+
 
 # reference : https://stackoverflow.com/questions/62430071/donald-knuth-algorithm-mastermind

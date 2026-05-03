@@ -263,12 +263,9 @@ def entrer_code(code: tuple[int]):
 
 
 def random_code():
-    """
-    Génère un code secret aléatoire.
-    """
-    global frame_essai_actuel
     """callback du bouton "Code Aléatoire"
     """
+    global frame_essai_actuel
     entrer_code(tuple(randint(0, 7) for _ in range(4)))
     frame_essai_actuel = Frame(frame_historique)
     frame_essai_actuel.pack(side=TOP)
