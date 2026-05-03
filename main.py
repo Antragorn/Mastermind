@@ -242,6 +242,23 @@ def switch_callback(num_couleur: int):
             popup.geometry("300x150")
             Label(popup, text="🎉 Bravo ! Vous avez trouvé le code !", font=("Arial", 12)).pack(pady=20)
             return
+
+        if num_essai >= essais_max and not partie_terminee:
+            partie_terminee = True
+
+            popup = Toplevel(fenetre)
+            popup.title("Défaite")
+            popup.geometry("300x200")
+
+            Label(popup, text="❌ Vous avez perdu !", font=("Arial", 12)).pack(pady=10)
+
+            frame_code = Frame(popup)
+            frame_code.pack(pady=10)
+
+            for couleur in code_secret:
+                canvas = Canvas(frame_code, width=30, height=30)
+                canvas.pack(side=LEFT, padx=5)
+                canvas.create_oval(5, 5, 25, 25, fill=liste_couleurs[couleur])
     else:
         entrer_code(tuple(prec_essai))
         
