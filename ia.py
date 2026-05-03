@@ -20,9 +20,26 @@ def knuth(essais:tuple) -> list[int]:
     if len(possible) == 1:
         return possible[0]
 
-    prochain_essai = []
+    best_guess = None
+    best_score = float('inf')
 
-    return prochain_essai
+    possible_arr = np.array(possible)
+    codes_arr = np.array(codes)
+
+    for guess in codes:
+        partition = {}
+        for p in possible:
+            r = calculer_essai(guess, p)
+            partition[r] = partition.get(r, 0) + 1
+        
+        worst_case = max(partition.values())
+
+        if worst_case < best_score or (worst_case == best_score and guess in possible):
+            if worst_case < best_score or best_guess not in possible:
+                best_score = worst_case
+                best_guess = guess
+
+    return best_guess
 
 
 
