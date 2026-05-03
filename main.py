@@ -62,7 +62,7 @@ def charge_partie():
     menu.pack(ipadx=100, ipady=100, fill=BOTH)
 
     def charger_selection():
-        global code_secret, historique_essais, num_essai, code_entered, chargement
+        global code_secret, historique_essais, num_essai, code_entered, chargement, historique_essais_rep
         partie = nom_var.get()
         rejouer()  # réinitialiser le plateau
 
@@ -80,6 +80,7 @@ def charge_partie():
             for couleur in essai:
                 switch_callback(couleur)
         chargement = False
+        historique_essais_rep = [(essai, calculer_essai(essai, code_secret)) for essai in historique_essais]
 
         choix_fenetre.destroy()
         messagebox.showinfo("Chargement", f"Partie '{partie}' rechargée avec succès !")
@@ -214,6 +215,7 @@ frame_essai_actuel: Frame
 essais_max: int = 10
 num_essai: int = 0
 historique_essais: list = []
+historique_essais_rep: list = []  # [(essai, reponse), ...]
 chargement: bool = False
 
 # Callbacks
@@ -238,6 +240,8 @@ def switch_callback(num_couleur: int):
             historique_essais.append(essai_tuple)
 
         reponse = calculer_essai(essai_tuple, code_secret)
+        if not chargement:
+            historique_essais_rep.append((essai_tuple, reponse))
 
         afficher_reponse(ancien_frame, reponse)
         if essai_tuple == code_secret:
@@ -336,25 +340,17 @@ def afficher_reponse(frame, reponse: tuple[int, int]):
         canvas.create_rectangle(2, 2, 18, 18, fill=couleur)
 
 
-def aide() -> tuple[int]:
-    """
-    Fournit une aide en proposant une combinaison possible.
-    """
-    return next(iter(set_possibilites))
-
-
 def rejouer():
     """
     Permet de recommencer une nouvelle partie.
     """
-    global code_entered, code_secret, set_possibilites, prec_essai, num_essai, partie_terminee, frame_essai_actuel
+    global code_entered, code_secret, set_possibilites, prec_essai, num_essai, partie_terminee, frame_essai_actuel, historique_essais_rep
     partie_terminee = False
     code_entered = False
     code_secret = (0,)
     prec_essai.clear()
     num_essai = 0
-
-    set_possibilites = set(itertools.product(range(len(liste_couleurs)), repeat=longueur_code))
+    historique_essais_rep.clear()
 
     for widget in frame_historique.winfo_children():
         widget.destroy()
@@ -407,7 +403,18 @@ def annuler():
 
 
 def coup_ia_callback():
-    pass
+    """Joue un coup proposé par l'IA (algorithme de Knuth)"""
+    global prec_essai
+    if not code_entered or partie_terminee:
+        return
+    
+    from ia import knuth
+
+    coup = knuth(historique_essais_rep)
+    
+    # Jouer le coup proposé en appelant switch_callback pour chaque couleur
+    for couleur in coup:
+        switch_callback(couleur)
 
 if __name__ == '__main__':
     fenetre = Tk()
