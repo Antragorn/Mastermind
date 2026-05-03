@@ -156,13 +156,8 @@ def init_ui():
 
     # paramètres
     menu_parametre = Menu(menu, tearoff=0)
-    ai_var = StringVar(value="knuth")
-    menu_ia = Menu(menu_parametre, tearoff=0)
-    menu_ia.add_radiobutton(label="Knuth's Algorithm", variable=ai_var, value="knuth")
-    menu_ia.add_radiobutton(label="Expected-Size Algorithm", variable=ai_var, value="exp_size")
     menu.add_cascade(label="Paramètres", menu=menu_parametre)
     menu_parametre.add_command(label="Ouvrir", command=ouvrir_param)
-    menu_parametre.add_cascade(label="IA", menu=menu_ia)
 
     # fichier
     menu_fichier = Menu(menu, tearoff=0)
@@ -419,4 +414,16 @@ def coup_ia_callback():
 if __name__ == '__main__':
     fenetre = Tk()
     init_ui()
+    
+    messagebox.showinfo(
+        "Bienvenue au Mastermind!",
+        "Objectif: Trouver le code secret en 10 essais maximum.\n\n"
+        "Chaque code est composé de 4 couleurs\n"
+        "Après chaque tentative, vous recevez des indices:\n"
+        "  - Carrés NOIRS: couleur correcte à la bonne place\n"
+        "  - Carrés BLANCS: couleur correcte à la mauvaise place\n\n"
+        "Maintenant, le joueur 1 peut entrer un code en cachette ou vous pouvez cliquer sur le bouton "
+        "\"code aleatoire\" pour commencer la partie."
+    )
+    
     fenetre.mainloop()
