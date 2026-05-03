@@ -250,7 +250,7 @@ def switch_callback(num_couleur: int):
             popup.title("Défaite")
             popup.geometry("300x200")
 
-            Label(popup, text="❌ Vous avez perdu !", font=("Arial", 12)).pack(pady=10)
+            Label(popup, text="❌ Vous avez perdu ! Le code secret était :", font=("Arial", 12)).pack(pady=10)
 
             frame_code = Frame(popup)
             frame_code.pack(pady=10)
