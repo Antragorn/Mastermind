@@ -175,16 +175,24 @@ def init_ui():
     code_aleatoire = Button(fenetre, command=random_code, text="code aleatoire")
     annule = Button(fenetre, command=annuler, text="annuler")
     quitter = Button(fenetre, command=fenetre.destroy, text="quitter")
+    coup_ia_button = Button(fenetre, command=coup_ia_callback, text="coup de l'IA")
+    efface = Button(fenetre, command=effacer, text="effacer")
+
     frame_jeu = Frame(fenetre)
     frame_historique = Frame(frame_jeu)
+
     rejoue.grid(row=2, column=0)
     annule.grid(row=2, column=0, columnspan=len(liste_couleurs), sticky="n")
     code_aleatoire.grid(row=3, column=0, columnspan=len(liste_couleurs), sticky="n")
+    coup_ia_button.grid(row=2, column=1, sticky="n")
     quitter.grid(row=2, column=len(liste_couleurs) - 1)
+    efface.grid(row=2, column=2)
+
     for i, couleur in enumerate(liste_couleurs):
         boutcoul = Button(fenetre, command=lambda n=i: switch_callback(n), bg=couleur, width=11, height=2)
         boutcoul.grid(row=1, column=i, sticky=EW)
         fenetre.grid_columnconfigure(i, weight=1)
+    
     frame_jeu.grid(row=0, column=0, columnspan=len(liste_couleurs), sticky=NSEW)
     frame_historique.pack(side=TOP, fill=BOTH, expand=True)
     fenetre.grid_rowconfigure(0, weight=1)
@@ -198,8 +206,6 @@ partie_terminee: bool = False
 code_secret: tuple[int] = (0,)
 longueur_code: int = 4
 liste_couleurs: list[str] = ['#000000', '#ffffff', '#00ff00', '#ff0000', '#0000ff', '#00ffff', '#ff00ff', '#ffff00']
-# noinspection PyTypeChecker
-set_possibilites: set[tuple[int]] = set(itertools.product(range(len(liste_couleurs)), repeat=longueur_code))
 prec_essai: list[int] = []
 code_aleatoire: Button
 frame_jeu: Frame
@@ -213,13 +219,13 @@ chargement: bool = False
 # Callbacks
 def switch_callback(num_couleur: int):
     """Callback des boutons de couleur, redirige vers la création du code ou la tentative d'un essai"""
-    global set_possibilites, num_essai, frame_essai_actuel, partie_terminee
+    global num_essai, frame_essai_actuel, partie_terminee
     if partie_terminee:
         return
     prec_essai.append(num_couleur)
-    canvas = Canvas(frame_essai_actuel,height=75,width=75)
+    canvas = Canvas(frame_essai_actuel,height=50,width=50)
     canvas.pack(side=LEFT)
-    canvas.create_oval(5, 5, 70, 70, fill=liste_couleurs[num_couleur])
+    canvas.create_oval(5, 5, 45, 45, fill=liste_couleurs[num_couleur])
     if len(prec_essai) < longueur_code:
         return
 
@@ -232,7 +238,6 @@ def switch_callback(num_couleur: int):
             historique_essais.append(essai_tuple)
 
         reponse = calculer_essai(essai_tuple, code_secret)
-        set_possibilites = {pos for pos in set_possibilites if calculer_essai(essai_tuple, pos) == reponse}
 
         afficher_reponse(ancien_frame, reponse)
         if essai_tuple == code_secret:
@@ -362,15 +367,47 @@ def rejouer():
     code_aleatoire.grid(row=3, column=0, columnspan=len(liste_couleurs), sticky="n")
 
 
-def annuler():
+def effacer():
     """
     Annule la dernière couleur selectionne mais ne fait rien si aucune couleur n'est choisi.
     """
-    global prec_essai, frame_essai_actuel
-
+    global prec_essai, frame_essai_actuel, partie_terminee
+    if partie_terminee:
+        return
     if prec_essai:
         prec_essai.pop()
         frame_essai_actuel.winfo_children()[-1].destroy()
+
+def annuler():
+    global num_essai, historique_essais, partie_terminee, prec_essai, frame_essai_actuel
+    if not(num_essai or historique_essais) or partie_terminee:
+        return
+    
+    historique_essais.pop()
+    num_essai -= 1
+    prec_essai.clear()
+
+    for widget in frame_historique.winfo_children():
+        widget.destroy()
+    
+    for essai in historique_essais:
+        frame_essai = Frame(frame_historique)
+        frame_essai.pack(side=TOP)
+        
+        for couleur_idx in essai:
+            canvas = Canvas(frame_essai, height=50, width=50)
+            canvas.pack(side=LEFT)
+            canvas.create_oval(5, 5, 45, 45, fill=liste_couleurs[couleur_idx])
+        
+        reponse = calculer_essai(essai, code_secret)
+        afficher_reponse(frame_essai, reponse)
+    
+    frame_essai_actuel = Frame(frame_historique)
+    frame_essai_actuel.pack(side=TOP)
+
+
+def coup_ia_callback():
+    pass
 
 if __name__ == '__main__':
     fenetre = Tk()
