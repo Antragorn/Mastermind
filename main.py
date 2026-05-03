@@ -1,25 +1,132 @@
 from tkinter import *
 from random import randint
 import itertools
+from tkinter import messagebox
+from json import load, dump
 
 # fonctions pour les menus
 from tkinter import Frame
 
 
-def charge_partie():
-    """Permet de charger le fichier sauvegarde"""
-    pass
-
-
 def sauve_partie():
     """Permet de sauvegarder la partie en cours dans un fichier"""
-    pass
+    sauv_fenetre = Toplevel(fenetre)
+    sauv_fenetre.title("Sauvegarder une partie")
+    Label(sauv_fenetre, text="Nom de la partie :").pack(padx=50, pady=50)
+    entry = Entry(sauv_fenetre, justify=CENTER)
+    entry.pack(ipadx=10, ipady=5, fill=BOTH)
+
+    def sauvegarder():
+        nom_partie = entry.get().strip()
+
+        # Lire le fichier existant
+        try:
+            with open("save.txt", "r") as f:
+                data = load(f)
+        except FileNotFoundError:
+            data = {}
+        data[nom_partie] = {
+            "code_secret": list(code_secret),
+            "historique": [list(e) for e in historique_essais],
+            "num_essai": num_essai
+        }  # Ajouter la nouvelle partie
+        # Écrire dans le fichier
+        with open("save.txt", "w") as f:
+            dump(data, f)
+        sauv_fenetre.destroy()
+        messagebox.showinfo("Sauvegarde", "Partie sauvegardée avec succès !")
+
+    Button(sauv_fenetre, text="Sauvegarder", command=sauvegarder).pack(padx=70, pady=50)
+
+
+def charge_partie():
+    """Permet de charger le fichier sauvegarde"""
+    try:
+        with open("save.txt", "r") as f:
+            data = load(f)
+            if len(data) == 0:
+                raise FileNotFoundError
+    except FileNotFoundError:
+        messagebox.showerror("Erreur", "Aucune partie sauvegardée trouvée !")
+        return
+
+    # Créer la fenêtre pour choisir la partie
+    choix_fenetre = Toplevel(fenetre)
+    choix_fenetre.title("Charger une partie")
+
+    nom_var = StringVar()
+    noms_parties = list(data.keys())
+    nom_var.set(noms_parties[0])  # valeur par défaut
+
+    menu = OptionMenu(choix_fenetre, nom_var, *noms_parties)
+    menu.pack(ipadx=100, ipady=100, fill=BOTH)
+
+    def charger_selection():
+        global code_secret, historique_essais, num_essai, code_entered, chargement
+        partie = nom_var.get()
+        rejouer()  # réinitialiser le plateau
+
+        sauvegarde = data[partie]
+
+        code_secret = tuple(sauvegarde["code_secret"])
+        historique_essais = [tuple(e) for e in sauvegarde["historique"]]
+        num_essai = sauvegarde["num_essai"]
+        code_entered = True
+
+        code_aleatoire.grid_forget()
+
+        chargement = True
+        for essai in historique_essais:
+            for couleur in essai:
+                switch_callback(couleur)
+        chargement = False
+
+        choix_fenetre.destroy()
+        messagebox.showinfo("Chargement", f"Partie '{partie}' rechargée avec succès !")
+
+    bouton_charger = Button(choix_fenetre, text="Charger", command=charger_selection)
+    bouton_charger.pack(padx=10, pady=10)
 
 
 def supr_partie():
     """Permet de supprimer une sauvegarde"""
-    pass
+    try:
+        with open("save.txt", "r") as f:
+            data = load(f)
+            if len(data) == 0:
+                raise FileNotFoundError
+    except FileNotFoundError:
+        messagebox.showerror("Erreur", "Aucune partie sauvegardée trouvée !")
+        return
 
+    # Créer la fenêtre pour choisir la partie
+    choix_fenetre = Toplevel(fenetre)
+    choix_fenetre.title("Supprimer une partie")
+
+    nom_var = StringVar()
+    noms_parties = list(data.keys())
+    nom_var.set(noms_parties[0])  # valeur par défaut
+
+    menu = OptionMenu(choix_fenetre, nom_var, *noms_parties)
+    menu.pack(ipadx=100, ipady=100, fill=BOTH)
+
+    def supprimer():
+        nom_partie = nom_var.get()
+
+        # Lire le fichier existant
+        try:
+            with open("save.txt", "r") as f:
+                data = load(f)
+        except FileNotFoundError:
+            data = {}
+        del data[nom_partie]
+        # Écrire dans le fichier
+        with open("save.txt", "w") as f:
+            dump(data, f)
+        choix_fenetre.destroy()
+        messagebox.showinfo("Suppression", f"Partie {nom_partie} supprimée avec succès !")
+
+    Button(choix_fenetre, text="Supprimer", command=supprimer).pack(padx=70, pady=50)
 
 def ouvrir_param():
     """Permet de charger un fichier de paramètres"""
@@ -27,7 +134,17 @@ def ouvrir_param():
 
 
 def init_ui():
-    """création de la fenêtre"""
+    """
+    Initialise l'interface graphique principale du jeu Mastermind.
+
+    Crée :
+    - La fenêtre principale (plein écran)
+    - Les menus (Fichier, Paramètres, IA)
+    - Les boutons d'action (rejouer, annuler, quitter, code aléatoire)
+    - Les boutons de sélection des couleurs
+    - Les frames pour afficher les essais et l'historique
+
+    """
     global code_aleatoire, frame_jeu, frame_essai_actuel, frame_historique
     fenetre.title("Mastermind")
     fenetre.state("zoomed")
@@ -71,7 +188,7 @@ def init_ui():
     frame_jeu.grid(row=0, column=0, columnspan=len(liste_couleurs), sticky=NSEW)
     frame_historique.pack(side=TOP, fill=BOTH, expand=True)
     fenetre.grid_rowconfigure(0, weight=1)
-    frame_essai_actuel=Frame(frame_jeu)
+    frame_essai_actuel=Frame(frame_historique)
     frame_essai_actuel.pack(side=TOP)
 
 
@@ -90,6 +207,8 @@ frame_historique: Frame
 frame_essai_actuel: Frame
 essais_max: int = 10
 num_essai: int = 0
+historique_essais: list = []
+chargement: bool = False
 
 # Callbacks
 def switch_callback(num_couleur: int):
@@ -109,6 +228,8 @@ def switch_callback(num_couleur: int):
     if code_entered:
         num_essai += 1
         essai_tuple = tuple(prec_essai)
+        if not chargement:
+            historique_essais.append(essai_tuple)
 
         reponse = calculer_essai(essai_tuple, code_secret)
         set_possibilites = {pos for pos in set_possibilites if calculer_essai(essai_tuple, pos) == reponse}
@@ -142,6 +263,9 @@ def entrer_code(code: tuple[int]):
 
 
 def random_code():
+    """
+    Génère un code secret aléatoire.
+    """
     global frame_essai_actuel
     """callback du bouton "Code Aléatoire"
     """
@@ -151,6 +275,9 @@ def random_code():
 
 
 def calculer_essai(essai: tuple[int], code: tuple[int]) -> tuple[int, int]:
+    """
+    Compare un essai avec le code secret.
+    """
     bonne_places = 0
     mauvaise_places = 0
     code_restant = list(code)
@@ -174,16 +301,33 @@ def calculer_essai(essai: tuple[int], code: tuple[int]) -> tuple[int, int]:
 
 
 def afficher_reponse(frame, reponse: tuple[int, int]):
+    """
+    Affiche visuellement la réponse à un essai mais sans donner la reponse exact
+    """
     bien, mal = reponse
-    label = Label(frame, text=f"{bien} bien placés, {mal} mal placés")
-    label.pack(side=RIGHT)
+
+    frame_rep = Frame(frame)
+    frame_rep.pack(side=RIGHT, padx=10)
+
+    pions = ["black"] * bien + ["white"] * mal
+
+    for i, couleur in enumerate(pions):
+        canvas = Canvas(frame_rep, width=20, height=20)
+        canvas.grid(row=i // 2, column=i % 2)
+        canvas.create_rectangle(2, 2, 18, 18, fill=couleur)
 
 
 def aide() -> tuple[int]:
+    """
+    Fournit une aide en proposant une combinaison possible.
+    """
     return next(iter(set_possibilites))
 
 
 def rejouer():
+    """
+    Permet de recommencer une nouvelle partie.
+    """
     global code_entered, code_secret, set_possibilites, prec_essai, num_essai, partie_terminee, frame_essai_actuel
     partie_terminee = False
     code_entered = False
@@ -198,13 +342,16 @@ def rejouer():
 
     if frame_essai_actuel:
         frame_essai_actuel.destroy()
-    frame_essai_actuel = Frame(frame_jeu)
+    frame_essai_actuel = Frame(frame_historique)
     frame_essai_actuel.pack(side=TOP)
 
     code_aleatoire.grid(row=3, column=0, columnspan=len(liste_couleurs), sticky="n")
 
 
 def annuler():
+    """
+    Annule la dernière couleur selectionne mais ne fait rien si aucune couleur n'est choisi.
+    """
     global prec_essai, frame_essai_actuel
 
     if prec_essai:
