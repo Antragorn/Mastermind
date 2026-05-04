@@ -7,7 +7,7 @@ def knuth(essais:tuple) -> list[int]:
     """
 
     if not essais:
-        return [1, 1, 2, 2] #initial try for the five-guess algorithm
+        return list(range(4)) #initial try for the five-guess algorithm
     
     codes = list(product(range(8), repeat=4))
 
