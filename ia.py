@@ -1,4 +1,3 @@
-import numpy as np
 from itertools import product
 from main import calculer_essai
 
@@ -22,9 +21,6 @@ def knuth(essais:tuple) -> list[int]:
 
     best_guess = None
     best_score = float('inf')
-
-    possible_arr = np.array(possible)
-    codes_arr = np.array(codes)
 
     for guess in codes:
         partition = {}

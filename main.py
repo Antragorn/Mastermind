@@ -340,6 +340,7 @@ def rejouer():
     prec_essai.clear()
     num_essai = 0
     historique_essais_rep.clear()
+    historique_essais.clear()
 
     for widget in frame_historique.winfo_children():
         widget.destroy()
