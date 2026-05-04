@@ -3,8 +3,6 @@ from random import randint
 import itertools
 from tkinter import messagebox
 from json import load, dump
-
-# fonctions pour les menus
 from tkinter import Frame
 
 
@@ -128,10 +126,6 @@ def supr_partie():
         messagebox.showinfo("Suppression", f"Partie {nom_partie} supprimée avec succès !")
 
     Button(choix_fenetre, text="Supprimer", command=supprimer).pack(padx=70, pady=50)
-
-def ouvrir_param():
-    """Permet de charger un fichier de paramètres"""
-    pass
 
 
 def init_ui():
@@ -375,6 +369,7 @@ def annuler():
         return
     
     historique_essais.pop()
+    historique_essais_rep.pop()
     num_essai -= 1
     prec_essai.clear()
 
