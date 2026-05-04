@@ -169,7 +169,7 @@ def init_ui():
     rejoue.grid(row=2, column=0)
     annule.grid(row=2, column=0, columnspan=len(liste_couleurs), sticky="n")
     code_aleatoire.grid(row=3, column=0, columnspan=len(liste_couleurs), sticky="n")
-    coup_ia_button.grid(row=2, column=1, sticky="n")
+    coup_ia_button.grid(row=2, column=5, sticky="n")
     quitter.grid(row=2, column=len(liste_couleurs) - 1)
     efface.grid(row=2, column=2)
 
