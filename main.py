@@ -140,7 +140,7 @@ def init_ui():
     - Les frames pour afficher les essais et l'historique
 
     """
-    global code_aleatoire, frame_jeu, frame_essai_actuel, frame_historique
+    global annule, code_aleatoire, frame_jeu, frame_essai_actuel, frame_historique, aide_button, coup_ia_button
     fenetre.title("Mastermind")
     fenetre.state("zoomed")
 
@@ -168,12 +168,9 @@ def init_ui():
     frame_historique = Frame(frame_jeu)
 
     rejoue.grid(row=2, column=0)
-    annule.grid(row=2, column=0, columnspan=len(liste_couleurs), sticky="n")
     code_aleatoire.grid(row=3, column=0, columnspan=len(liste_couleurs), sticky="n")
-    coup_ia_button.grid(row=2, column=5, sticky="n")
     quitter.grid(row=2, column=len(liste_couleurs) - 1)
-    efface.grid(row=2, column=2)
-    aide_button.grid(row=3,  column= 5)
+    efface.grid(row=2, column=0, columnspan=len(liste_couleurs), sticky="n")
 
     for i, couleur in enumerate(liste_couleurs):
         boutcoul = Button(fenetre, command=lambda n=i: switch_callback(n), bg=couleur, width=11, height=2)
@@ -275,6 +272,10 @@ def entrer_code(code: tuple[int]):
     code_secret = code[:]
     code_entered = True
     code_aleatoire.grid_forget()
+    aide_button.grid(row=3, column = 3, columnspan=2)
+    coup_ia_button.grid(row=2, column=5, sticky="n")
+    annule.grid(row=2, column=2)
+    
 
 
 def random_code():
