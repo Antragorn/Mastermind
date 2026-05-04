@@ -8,4 +8,4 @@ Antonin Beltran
 Kenny Hang
 
 
-https://github.com/987654321gv/projet-python-LSIN200N
+https://github.com/Antragorn/Mastermind
