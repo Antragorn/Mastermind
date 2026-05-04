@@ -148,11 +148,6 @@ def init_ui():
     menu = Menu(fenetre)
     fenetre.config(menu=menu)
 
-    # paramètres
-    menu_parametre = Menu(menu, tearoff=0)
-    menu.add_cascade(label="Paramètres", menu=menu_parametre)
-    menu_parametre.add_command(label="Ouvrir", command=ouvrir_param)
-
     # fichier
     menu_fichier = Menu(menu, tearoff=0)
     menu.add_cascade(label="Fichier", menu=menu_fichier)
