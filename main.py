@@ -348,6 +348,10 @@ def rejouer():
     historique_essais_rep.clear()
     historique_essais.clear()
     set_possibilites = set(itertools.product(range(len(liste_couleurs)), repeat=longueur_code))
+    aide_button.grid_forget()
+    annule.grid_forget()
+    coup_ia_button.grid_forget()
+
     
 
     for widget in frame_historique.winfo_children():
