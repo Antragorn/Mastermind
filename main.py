@@ -162,6 +162,7 @@ def init_ui():
     quitter = Button(fenetre, command=fenetre.destroy, text="quitter")
     coup_ia_button = Button(fenetre, command=coup_ia_callback, text="coup de l'IA")
     efface = Button(fenetre, command=effacer, text="effacer")
+    aide_button = Button(fenetre, command=aide_callback, text="aide")
 
     frame_jeu = Frame(fenetre)
     frame_historique = Frame(frame_jeu)
@@ -172,6 +173,7 @@ def init_ui():
     coup_ia_button.grid(row=2, column=5, sticky="n")
     quitter.grid(row=2, column=len(liste_couleurs) - 1)
     efface.grid(row=2, column=2)
+    aide_button.grid(row=3,  column= 5)
 
     for i, couleur in enumerate(liste_couleurs):
         boutcoul = Button(fenetre, command=lambda n=i: switch_callback(n), bg=couleur, width=11, height=2)
@@ -191,6 +193,7 @@ partie_terminee: bool = False
 code_secret: tuple[int] = (0,)
 longueur_code: int = 4
 liste_couleurs: list[str] = ['#000000', '#ffffff', '#00ff00', '#ff0000', '#0000ff', '#00ffff', '#ff00ff', '#ffff00']
+set_possibilites: set[tuple[int]] = set(itertools.product(range(len(liste_couleurs)), repeat=longueur_code))
 prec_essai: list[int] = []
 code_aleatoire: Button
 frame_jeu: Frame
@@ -205,7 +208,7 @@ chargement: bool = False
 # Callbacks
 def switch_callback(num_couleur: int):
     """Callback des boutons de couleur, redirige vers la création du code ou la tentative d'un essai"""
-    global num_essai, frame_essai_actuel, partie_terminee
+    global set_possibilites, num_essai, frame_essai_actuel, partie_terminee
     if partie_terminee:
         return
     prec_essai.append(num_couleur)
@@ -226,6 +229,8 @@ def switch_callback(num_couleur: int):
         reponse = calculer_essai(essai_tuple, code_secret)
         if not chargement:
             historique_essais_rep.append((essai_tuple, reponse))
+        
+        set_possibilites = {pos for pos in set_possibilites if calculer_essai(essai_tuple, pos) == reponse}
 
         afficher_reponse(ancien_frame, reponse)
         if essai_tuple == code_secret:
@@ -323,6 +328,11 @@ def afficher_reponse(frame, reponse: tuple[int, int]):
         canvas.grid(row=i // 2, column=i % 2)
         canvas.create_rectangle(2, 2, 18, 18, fill=couleur)
 
+def aide() -> tuple[int]:
+    """
+    Fournit une aide en proposant une combinaison possible.
+    """
+    return next(iter(set_possibilites))
 
 def rejouer():
     """
@@ -336,6 +346,8 @@ def rejouer():
     num_essai = 0
     historique_essais_rep.clear()
     historique_essais.clear()
+    set_possibilites = set(itertools.product(range(len(liste_couleurs)), repeat=longueur_code))
+    
 
     for widget in frame_historique.winfo_children():
         widget.destroy()
@@ -398,7 +410,18 @@ def coup_ia_callback():
 
     coup = knuth(historique_essais_rep)
     
-    # Jouer le coup proposé en appelant switch_callback pour chaque couleur
+    for couleur in coup:
+        switch_callback(couleur)
+
+def aide_callback():
+    """Joue un coup possible"""
+    global prec_essai,code_entered,partie_terminee
+    if not code_entered or partie_terminee:
+        return
+    
+    prec_essai.clear()
+    coup = aide()
+
     for couleur in coup:
         switch_callback(couleur)
 
